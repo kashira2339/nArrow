@@ -1,0 +1,75 @@
+#narrow-window,
+#narrow-window *{
+    border: none;
+    border-radius: 0 0 0 0;
+    font-family: “Courier New”;
+    margin: 0;
+    padding: 0;
+    font-style: normal;
+    font-weight: normal;
+    font-size : 100%;
+}
+
+#narrow-window{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    overflow: hidden;
+}
+
+#narrow-window > #search-text{
+    display: inline-block;
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    visibility: visible;
+}
+
+#narrow-window > #search-text:focus{
+    border: none;
+    box-shadow: 0 0 0 0 #000;
+}
+
+#narrow-window ul{
+    width: 100%;
+    height: calc(100% - 20px);
+    padding: 0;
+    margin: 0;
+    overflow: scroll;
+}
+
+#narrow-window > ul > li.narrow-item{
+    list-style-type: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+#narrow-window > ul > li.narrow-item > a{
+    text-align: left;
+    display: inline-block;
+    color: #fff;
+    font-size: 14px;
+    font-style: bold;
+    width: 100%;
+}
+
+#narrow-window > ul > li.narrow-item > a:before{
+    content: '-> ';
+    color: rgba(0, 255, 255, 1.0);
+}
+
+#narrow-window > ul > li.narrow-item.nohit{
+    display: none;
+}
+
+#narrow-window > ul > li.narrow-item > a:focus{
+    background-color: rgba(0, 255, 255, 0.5);
+}

@@ -1,0 +1,16 @@
+{
+    "name": "nArrow",
+    "version": "1.0.0",
+    "manifest_version": 2,
+    "description": "絞り込みインタフェースを用いて、ページ内のaタグのリンクに簡単にジャンプできるようにします",
+    "icons": {
+        "128": "icon128.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["prototype.js", "keycode.js", "nArrow.js", "controller.js"],
+            "css": ["nArrow.css"]
+        }
+    ]
+}
