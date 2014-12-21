@@ -47,18 +47,18 @@
 #narrow-window > ul > li.narrow-item{
     list-style-type: none;
     width: 100%;
+    height: 18px;
     margin: 0;
     padding: 0;
-    white-space: nowrap;
 }
 
 #narrow-window > ul > li.narrow-item > a{
     text-align: left;
     display: inline-block;
-    font-size: 14px;
-    font-style: bold;
+    font-size: 12px;
     color: #fff;
     width: 100%;
+    height: 100%;
     text-decoration: none;
     outline: none;
 }
