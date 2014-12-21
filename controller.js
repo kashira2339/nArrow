@@ -1,6 +1,5 @@
 (function(){
     var pressedCTRL = false;
-    var links = document.getElementsByTagName('a');
 
     var keyEvent = function(selector){
         document.addEventListener('keydown', function(e){
@@ -19,7 +18,7 @@
             if(pressedCTRL){
                 switch(e.keyCode){
                 case KEYCODE.C:
-                    selector.isVisible() ? selector.hide() : selector.show();
+                    selector.toggle();
                     break;
                 case KEYCODE.P:
                     selector.select().up();
@@ -28,13 +27,25 @@
                     selector.select().down();
                     break;
                 case KEYCODE.L:
-                    selector.moveOrigin();
+                    selector.movePage().parent();
+                    break;
+                case KEYCODE.SLASH:
+                    selector.movePage().origin();
+                    break;
+                case KEYCODE.SPC:
+                    e.preventDefault();
+                    selector.mark();
+                    break;
+                case KEYCODE.O:
+                    selector.openMarkedLink();
                     break;
                 }
             } else {
                 switch(e.keyCode){
-                case KEYCODE.UP: break;
-                case KEYCODE.DOWN: break;
+                case KEYCODE.UP:
+                    break;
+                case KEYCODE.DOWN:
+                    break;
                 case KEYCODE.ENTER: break;
                 default:
                     selector.letSearch();
@@ -44,10 +55,6 @@
         }, false);
     };
 
-    var init = function(){
-        var selector = new nArrow(links);
-        keyEvent(selector);
-    };
-
-    document.body.onload = init();
+    var selector = new nArrow(document.getElementsByTagName('a'));
+    keyEvent(selector);
 })();

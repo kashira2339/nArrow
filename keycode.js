@@ -1,6 +1,8 @@
 //育てる
 var KEYCODE = {
+    SPC : 32,
     CTRL : 17,
+    SLASH: 191,
     A : 65,
     B : 66,
     C : 67,

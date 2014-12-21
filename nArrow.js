@@ -3,8 +3,7 @@ var nArrow = function(linksArray){
     var narrowList = document.createElement('ul');
 
     narrowWindow.id = 'narrow-window';
-    narrowWindow.style.width = window.parent.screen.width + 'px';
-
+    setWindowSize();
     var searchText = document.createElement('input');
     searchText.id = 'search-text';
     searchText.type = 'text';
@@ -13,9 +12,31 @@ var nArrow = function(linksArray){
 
     var isVisible = false;
 
+
+    function setWindowSize(){
+        narrowWindow.style.width = window.innerWidth + 'px';
+    }
+
+    function focus(element){
+        element.focus();
+    }
+
+    function removeNarrowSelected(){
+        var selectedNode = document.getElementsByClassName('narrow-selected');
+        for(var i = 0; i < selectedNode.length; i++) {
+            selectedNode[i].classList.remove('narrow-selected');
+        }
+    }
+
+    window.onresize = function(){
+        setWindowSize();
+    };
+
     var show = function(){
         if(isVisible) return;
         isVisible = true;
+
+        setWindowSize();
 
         searchText.addEventListener('keyup', function(e){
             if(e.keyCode === KEYCODE.ENTER){
@@ -36,6 +57,7 @@ var nArrow = function(linksArray){
                             if(searchWord[j] === '') return isNohit;
                             if(narrowLinks[i].
                                innerText.
+                               replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'').
                                toLowerCase().
                                indexOf(searchWord[j].toLowerCase()) === -1){
                                 return true;
@@ -57,10 +79,23 @@ var nArrow = function(linksArray){
                     narrowItem.classList.add('narrow-item');
                     var a = document.createElement('a');
                     a.href = linksArray[i].href;
-                    a.innerText =
-                        linksArray[i].innerText +
-                        '\t' +
-                        linksArray[i].href;
+                    a.addEventListener('focus', function(){
+                        (function(i){
+                            linksArray[i].classList.add('narrow-selected');
+                            scroll(linksArray[i].offsetLeft,
+                                   linksArray[i].offsetTop);
+                        })(i);
+                    });
+                    if(!linksArray[i].innerText.withoutWhiteSpace().isEmpty()){
+                        var name = document.createElement('span');
+                        name.classList.add('narrow-item-name');
+                        name.appendChild(document.createTextNode(linksArray[i].innerText));
+                        a.appendChild(name);
+                    }
+                    var url = document.createElement('span');
+                    url.classList.add('narrow-item-url');
+                    url.appendChild(document.createTextNode(linksArray[i].href));
+                    a.appendChild(url);
                     narrowItem.appendChild(a);
                     narrowList.appendChild(narrowItem);
                 }
@@ -70,24 +105,34 @@ var nArrow = function(linksArray){
         document.body.appendChild(narrowWindow);
     };
 
+    var hide = function(){
+        if(!isVisible) return;
+        removeNarrowSelected();
+        document.body.removeChild(narrowWindow);
+        searchText.value = '';
+        narrowList.innerHTML = '';
+        isVisible = false;
+    };
+
     var select = function(){
+        removeNarrowSelected();
         var focusNode = document.activeElement || null;
         var narrowLinks = document.querySelectorAll('.narrow-item:not(.nohit)');
         function keymove(startIndex, endIndex, move){
             if(!isVisible) return;
             if(focusNode.parentNode.tagName === 'LI'){
                 if (focusNode.parentNode === narrowLinks[endIndex]) {
-                    narrowLinks[startIndex].firstChild.focus();
+                    focus(narrowLinks[startIndex].firstChild);
                 }else if(!!move(focusNode.parentNode)){
                     while(move(focusNode.parentNode).classList.contains('nohit')){
                         focusNode = move(focusNode.parentNode).firstChild;
                     }
-                    move(focusNode.parentNode).firstChild.focus();
+                    focus(move(focusNode.parentNode).firstChild);
                 } else {
-                    narrowLinks[startIndex].firstChild.focus();
+                    focus(narrowLinks[startIndex].firstChild);
                 }
             } else {
-                narrowLinks[startIndex].firstChild.focus();
+                focus(narrowLinks[startIndex].firstChild);
             }
         }
         function next(elm){
@@ -106,34 +151,42 @@ var nArrow = function(linksArray){
         };
     };
 
-    var hide = function(){
-        if(!isVisible) return;
-        document.body.removeChild(narrowWindow);
-        searchText.value = '';
-        narrowList.innerHTML = '';
-        isVisible = false;
-    };
-
-    var letSearch = function(){
-        if(document.getElementById('search-text')){
-            document.getElementById('search-text').focus();
-        }
-    };
-
-    var getIsVisible = function(){
-        return isVisible;
-    };
-
-    var moveOrigin = function(){
-        location.href = location.origin;
-    };
-    
     return {
-        show : show,
+        toggle : function(){
+            (!isVisible) ? show() : hide();
+        },
         select : select,
-        hide : hide,
-        isVisible : getIsVisible,
-        letSearch : letSearch,
-        moveOrigin : moveOrigin
+        mark : function(){
+            if(!isVisible) return;
+            var focusNode = document.activeElement || null;
+            if(!!focusNode){
+                focusNode.classList.toggle('marked');
+            }
+        },
+        openMarkedLink : function(){
+            var markedLink = document.querySelectorAll('a.marked');
+            for(var i = 0; i < markedLink.length; i++) {
+                window.open(markedLink[i].href);
+            }
+        },
+        letSearch : function(){
+            if(document.getElementById('search-text')){
+                document.getElementById('search-text').focus();
+            }
+        },
+        movePage : function(){
+            return {
+                parent : function(){
+                    var url = location.href;
+                    if(url.endsWith('/')){
+                        url = url.substring(0, url.lastIndexOf('/'));
+                    }
+                    location.href = url.substring(0, url.lastIndexOf('/'));
+                },
+                origin : function(){
+                    location.href = location.origin;
+                }
+            };
+        }
     };
 };

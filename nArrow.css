@@ -55,15 +55,32 @@
 #narrow-window > ul > li.narrow-item > a{
     text-align: left;
     display: inline-block;
-    color: #fff;
     font-size: 14px;
     font-style: bold;
+    color: #fff;
     width: 100%;
+    text-decoration: none;
+    outline: none;
+}
+
+#narrow-window > ul > li.narrow-item > a > .narrow-item-name{
+    color: rgba(0, 255, 255, 1.0);
+    margin-right: 10px;
+}
+
+#narrow-window > ul > li.narrow-item > a > .narrow-item-url{
+    float: right;
+    color: #fff;
 }
 
 #narrow-window > ul > li.narrow-item > a:before{
     content: '-> ';
-    color: rgba(0, 255, 255, 1.0);
+    color: rgba(0, 255, 255, 10);
+}
+
+#narrow-window > ul > li.narrow-item > a.marked:before{
+    content: '★ ';
+    color: yellow;
 }
 
 #narrow-window > ul > li.narrow-item.nohit{
@@ -71,5 +88,13 @@
 }
 
 #narrow-window > ul > li.narrow-item > a:focus{
+    background-color: rgba(0, 255, 255, 0.5);
+}
+
+#narrow-window > ul > li.narrow-item > a:focus > .narrow-item-name{
+    color: #ffffff;
+}
+
+.narrow-selected{
     background-color: rgba(0, 255, 255, 0.5);
 }
