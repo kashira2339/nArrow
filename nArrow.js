@@ -1,17 +1,20 @@
 var nArrow = function(linksArray){
     var narrowWindow = document.createElement('div');
     var narrowList = document.createElement('ul');
-
     narrowWindow.id = 'narrow-window';
-    setWindowSize();
+
     var searchText = document.createElement('input');
     searchText.id = 'search-text';
     searchText.type = 'text';
     searchText.placeholder = 'search...';
-    narrowWindow.appendChild(searchText);
 
+    narrowWindow.appendChild(searchText);
     var isVisible = false;
 
+    setWindowSize();
+    window.onresize = function(){
+        setWindowSize();
+    };
 
     function setWindowSize(){
         narrowWindow.style.width = window.innerWidth + 'px';
@@ -28,11 +31,7 @@ var nArrow = function(linksArray){
         }
     }
 
-    window.onresize = function(){
-        setWindowSize();
-    };
-
-    var show = function(){
+    function show(){
         if(isVisible) return;
         isVisible = true;
 
@@ -71,7 +70,7 @@ var nArrow = function(linksArray){
             }
         });
 
-        for(var i = linksArray.length-1; i >= 0; i--) {
+        for(var i = 0; i < linksArray.length; i++) {
             (function(i){
                 if(linksArray[i].href.startsWith('http://') ||
                    linksArray[i].href.startsWith('https://')){
@@ -83,7 +82,7 @@ var nArrow = function(linksArray){
                         (function(i){
                             linksArray[i].classList.add('narrow-selected');
                             scroll(linksArray[i].offsetLeft,
-                                   linksArray[i].offsetTop);
+                                   linksArray[i].offsetTop - window.innerHeight/4);
                         })(i);
                     });
                     if(!linksArray[i].innerText.withoutWhiteSpace().isEmpty()){
@@ -103,9 +102,9 @@ var nArrow = function(linksArray){
         }
         narrowWindow.appendChild(narrowList);
         document.body.appendChild(narrowWindow);
-    };
+    }
 
-    var hide = function(){
+    function hide(){
         if(!isVisible) return;
         removeNarrowSelected();
         document.body.removeChild(narrowWindow);
@@ -118,22 +117,18 @@ var nArrow = function(linksArray){
         removeNarrowSelected();
         var focusNode = document.activeElement || null;
         var narrowLinks = document.querySelectorAll('.narrow-item:not(.nohit)');
-        function keymove(startIndex, endIndex, move){
+        function keymove(startIndex, move){
             if(!isVisible) return;
-            if(focusNode.parentNode.tagName === 'LI'){
-                if (focusNode.parentNode === narrowLinks[endIndex]) {
-                    focus(narrowLinks[startIndex].firstChild);
-                }else if(!!move(focusNode.parentNode)){
-                    while(move(focusNode.parentNode).classList.contains('nohit')){
-                        focusNode = move(focusNode.parentNode).firstChild;
-                    }
-                    focus(move(focusNode.parentNode).firstChild);
-                } else {
-                    focus(narrowLinks[startIndex].firstChild);
+            var target = narrowLinks[startIndex].firstChild;
+            (focusNode.parentNode.tagName !== 'LI' ? target : (function(){
+                var node;
+                while (!! (node = move(focusNode.parentNode)) &&
+                       (!('HTMLElement' in node) && !('Element' in node)) &&
+                       node.classList.contains('nohit')){
+                    focusNode = node.firstChild;
                 }
-            } else {
-                focus(narrowLinks[startIndex].firstChild);
-            }
+                return !!node ? node.firstChild : null;
+            })() || target).focus();
         }
         function next(elm){
             return elm.nextSibling || null;
@@ -143,10 +138,10 @@ var nArrow = function(linksArray){
         }
         return {
             up : function(){
-                keymove(narrowLinks.length-1, 0, prev);
+                keymove(narrowLinks.length-1, prev);
             },
             down : function(){
-                keymove(0, narrowLinks.length-1, next);
+                keymove(0, next);
             }
         };
     };
@@ -177,11 +172,10 @@ var nArrow = function(linksArray){
         movePage : function(){
             return {
                 parent : function(){
-                    var url = location.href;
                     if(url.endsWith('/')){
-                        url = url.substring(0, url.lastIndexOf('/'));
+                        url = location.href.slice(0, -1);
                     }
-                    location.href = url.substring(0, url.lastIndexOf('/'));
+                    location.href = location.href.substring(0, url.lastIndexOf('/'));
                 },
                 origin : function(){
                     location.href = location.origin;

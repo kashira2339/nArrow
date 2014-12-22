@@ -13,5 +13,3 @@ String.prototype.withoutWhiteSpace = function(){
 String.prototype.endsWith = function(prefix){
     return this.substr(this.length - prefix.length) === prefix;
 };
-
-
