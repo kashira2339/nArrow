@@ -32,7 +32,8 @@
         UP : 38,
         DOWN : 40,
         ENTER : 13,
-        SEMICOLON : 59
+        SEMICOLON : 59,
+        DOT : 190
     };
 
     var pressedCTRL = false;
@@ -51,9 +52,10 @@
         }, false);
 
         document.addEventListener('keydown', function(e){
+            console.log(e.keyCode);
             if(pressedCTRL){
                 switch(e.keyCode){
-                case KEYCODE.SEMICOLON:
+                case KEYCODE.DOT:
                     selector.toggle();
                     break;
                 case KEYCODE.P:
