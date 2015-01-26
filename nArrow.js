@@ -7,8 +7,9 @@ var nArrow = function(linksArray){
     searchText.id = 'search-text';
     searchText.type = 'text';
     searchText.placeholder = 'search...';
+    search();
 
-    narrowWindow.appendChild(searchText);
+    narrowWindow.append(searchText);
     var isVisible = false;
 
     setWindowSize();
@@ -34,41 +35,7 @@ var nArrow = function(linksArray){
     function show(){
         if(isVisible) return;
         isVisible = true;
-
         setWindowSize();
-
-        searchText.addEventListener('keyup', function(e){
-            if(e.keyCode === KEYCODE.ENTER){
-                var hits = document.querySelectorAll('.narrow-item:not(.nohit)');
-                if (hits.length === 1) {
-                    hits[0].firstChild.focus();
-                    location.href = hits[0].firstChild.href;
-                }
-            }
-            var narrowLinks = document.querySelectorAll('.narrow-item > a');
-            var searchWord = searchText.value.toLowerCase().split(' ');
-            for(var i = 0; i < narrowLinks.length; i++) {
-                (function(i){
-                    narrowLinks[i].parentNode.classList.remove('nohit');
-                    var isNohit = false;
-                    for(var j = 0; j < searchWord.length; j++){
-                        isNohit = (function(j){
-                            if(searchWord[j] === '') return isNohit;
-                            if(narrowLinks[i].
-                               innerText.
-                               replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'').
-                               toLowerCase().
-                               indexOf(searchWord[j].toLowerCase()) === -1){
-                                return true;
-                            }
-                            return isNohit;
-                        })(j);
-                        if(isNohit) break;
-                    }
-                    if(isNohit) narrowLinks[i].parentNode.classList.add('nohit');
-                })(i);
-            }
-        });
 
         for(var i = 0; i < linksArray.length; i++) {
             (function(i){
@@ -88,35 +55,58 @@ var nArrow = function(linksArray){
                     if(!linksArray[i].innerText.withoutWhiteSpace().isEmpty()){
                         var name = document.createElement('span');
                         name.classList.add('narrow-item-name');
-                        name.appendChild(document.createTextNode(linksArray[i].innerText));
-                        a.appendChild(name);
+                        name.append(linksArray[i].innerText);
+                        a.append(name);
                     }
                     var url = document.createElement('span');
                     url.classList.add('narrow-item-url');
-                    url.appendChild(document.createTextNode(linksArray[i].href));
-                    a.appendChild(url);
-                    narrowItem.appendChild(a);
-                    narrowList.appendChild(narrowItem);
+                    url.append(linksArray[i].href);
+                    a.append(url);
+                    narrowItem.append(a);
+                    narrowList.append(narrowItem);
                 }
             })(i);
         }
-        narrowWindow.appendChild(narrowList);
-        document.body.appendChild(narrowWindow);
+        narrowWindow.append(narrowList);
+        document.body.append(narrowWindow);
     }
 
     function hide(){
         if(!isVisible) return;
         removeNarrowSelected();
-        document.body.removeChild(narrowWindow);
+        document.body.remove(narrowWindow);
         searchText.value = '';
         narrowList.innerHTML = '';
         isVisible = false;
     };
 
+    function search(){
+        searchText.addEventListener('keyup', function(e){
+            var narrowLinks = document.querySelectorAll('.narrow-item > a');
+            var searchWord = searchText.value.toLowerCase().
+                replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
+                split(' ').join('.*');
+            var searchWord2 = searchText.value.toLowerCase().
+                replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
+                split(' ').reverse().join('.*');
+            for(var i = 0; i < narrowLinks.length; i++) {
+                (function(i){
+                    narrowLinks[i].parentNode.classList.remove('nohit');
+                    var linkText = narrowLinks[i].innerText.
+                            toLowerCase().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,' ');
+                    if (!linkText.match(searchWord) && !linkText.match(searchWord2)){
+                        narrowLinks[i].parentNode.classList.add('nohit');
+                    }
+                })(i);
+            }
+        });
+    }
+
     var select = function(){
         removeNarrowSelected();
         var focusNode = document.activeElement || null;
         var narrowLinks = document.querySelectorAll('.narrow-item:not(.nohit)');
+
         function keymove(startIndex, move){
             if(!isVisible) return;
             var target = narrowLinks[startIndex].firstChild;
@@ -172,10 +162,11 @@ var nArrow = function(linksArray){
         movePage : function(){
             return {
                 parent : function(){
+                    var url = location.href;
                     if(url.endsWith('/')){
-                        url = location.href.slice(0, -1);
+                        url = url.slice(0, -1);
                     }
-                    location.href = location.href.substring(0, url.lastIndexOf('/'));
+                    location.href = url.substring(0, url.lastIndexOf('/'));
                 },
                 origin : function(){
                     location.href = location.origin;

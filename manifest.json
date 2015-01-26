@@ -4,12 +4,12 @@
     "manifest_version": 2,
     "description": "絞り込みインタフェースを用いて、ページ内のaタグのリンクに簡単にジャンプできるようにします。また、URLの1階層上へのジャンプや、Originへのジャンプも容易に行えます。",
     "icons": {
-        "128": "icon128.png"
+        "128": "./icons/icon128.png"
     },
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["prototype.js", "keycode.js", "nArrow.js", "controller.js"],
+            "js": ["prototype.js", "nArrow.js", "controller.js"],
             "css": ["nArrow.css"]
         }
     ]
