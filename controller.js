@@ -40,15 +40,11 @@
 
     var keyEvent = function(selector){
         document.addEventListener('keydown', function(e){
-            if(e.keyCode === KEYCODE.CTRL){
-                pressedCTRL = true;
-            }
+            if(e.keyCode === KEYCODE.CTRL) pressedCTRL = true;
         }, false);
 
         document.addEventListener('keyup', function(e){
-            if(e.keyCode === KEYCODE.CTRL){
-                pressedCTRL = false;
-            }
+            if(e.keyCode === KEYCODE.CTRL) pressedCTRL = false;
         }, false);
 
         document.addEventListener('keydown', function(e){
@@ -79,10 +75,8 @@
                 }
             } else {
                 switch(e.keyCode){
-                case KEYCODE.UP:
-                    break;
-                case KEYCODE.DOWN:
-                    break;
+                case KEYCODE.UP: break;
+                case KEYCODE.DOWN: break;
                 case KEYCODE.ENTER: break;
                 default:
                     selector.letSearch();
@@ -91,7 +85,6 @@
             }
         }, false);
     };
-
     var selector = new nArrow(document.getElementsByTagName('a'));
     keyEvent(selector);
 })();
