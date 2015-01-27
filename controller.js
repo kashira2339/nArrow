@@ -54,7 +54,7 @@
         document.addEventListener('keydown', function(e){
             if(pressedCTRL){
                 switch(e.keyCode){
-                case KEYCODE.DOT
+                case KEYCODE.DOT:
                     selector.toggle();
                     break;
                 case KEYCODE.P:
