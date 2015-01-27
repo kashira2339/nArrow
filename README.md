@@ -15,6 +15,8 @@ release/nArrow.ctxをchrome拡張機能のページにドラッグアンドド�
 
 ENTERキーを押すとリンクにジャンプが出来ます．
 
+![nArrow DEMO](http://i.gyazo.com/001644c841b2135a575ef7f7e2ff8e08.gif "nArrow DEMO")
+
 ### キー操作
 | キーバインド |説明|
 |:-----|-------:|
