@@ -59,12 +59,12 @@
                 case KEYCODE.N:
                     selector.select().down();
                     break;
-                case KEYCODE.L:
-                    selector.movePage().parent();
-                    break;
-                case KEYCODE.SLASH:
-                    selector.movePage().origin();
-                    break;
+                // case KEYCODE.L:
+                //     selector.movePage().parent();
+                //     break;
+                // case KEYCODE.SLASH:
+                //     selector.movePage().origin();
+                //     break;
                 case KEYCODE.SPC:
                     e.preventDefault();
                     selector.mark();
