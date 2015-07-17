@@ -1,6 +1,6 @@
 {
     "name": "nArrow",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "manifest_version": 2,
     "description": "絞り込みインタフェースを用いて、ページ内のaタグのリンクに簡単にジャンプできるようにします。また、URLの1階層上へのジャンプや、Originへのジャンプも容易に行えます。",
     "icons": {
