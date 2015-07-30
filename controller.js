@@ -38,7 +38,7 @@
 
     var pressedCTRL = false;
 
-    var keyEvent = function(selector){
+    (function(selector){
         document.addEventListener('keydown', function(e){
             if(e.keyCode === KEYCODE.CTRL) pressedCTRL = true;
         }, false);
@@ -59,12 +59,6 @@
                 case KEYCODE.N:
                     selector.select().down();
                     break;
-                // case KEYCODE.L:
-                //     selector.movePage().parent();
-                //     break;
-                // case KEYCODE.SLASH:
-                //     selector.movePage().origin();
-                //     break;
                 case KEYCODE.SPC:
                     e.preventDefault();
                     selector.mark();
@@ -84,7 +78,5 @@
                 }
             }
         }, false);
-    };
-    var selector = new nArrow(document.getElementsByTagName('a'));
-    keyEvent(selector);
+    }(new nArrow(document.getElementsByTagName('a')));
 })();
