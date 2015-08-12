@@ -2,7 +2,7 @@
 #narrow-window *{
     border: none;
     border-radius: 0 0 0 0;
-    font-family: “Courier New”;
+    font-family: “Courier New;
     margin: 0;
     padding: 0;
     font-style: normal;
@@ -33,6 +33,7 @@
     background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     visibility: visible;
+    overflow: hidden;
 }
 
 #narrow-window > #search-text:focus{
@@ -42,7 +43,7 @@
 
 #narrow-window ul{
     width: 100%;
-    height: calc(100% - 20px);
+    height: calc(100% - 44px);
     padding: 0;
     margin: 0;
     overflow: scroll;
