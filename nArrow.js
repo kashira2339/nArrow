@@ -1,48 +1,85 @@
-var nArrow = function(linksArray){
+var nArrow = function(){
+    var linksArray;
+    var isInitialized = false;
     var narrowWindow = document.createElement('div');
     var narrowList = document.createElement('ul');
-    narrowWindow.id = 'narrow-window';
-
     var searchText = document.createElement('input');
+    var isVisible = true;
+    var typingTimer;
+    
+    /**
+     * narrowWindow
+     */
+    narrowWindow.id = 'narrow-window';
+    narrowWindow.append(searchText);
+
+    /**
+     * searchText
+     */
     searchText.id = 'search-text';
     searchText.type = 'text';
     searchText.placeholder = 'search...';
-    search();
+    searchText.addEventListener('keyup', function() {
+        window.clearTimeout(typingTimer);
+        typingTimer = window.setTimeout(search, 200);
+    });
 
-    narrowWindow.append(searchText);
-    var isVisible = false;
-
-    setWindowSize();
     window.onresize = function(){
         setWindowSize();
     };
 
+    /**
+     * 絞り込みウィンドウをリサイズする
+     */
     function setWindowSize(){
         narrowWindow.style.width = window.innerWidth + 'px';
     }
 
-    function focus(element){
-        element.focus();
-    }
-
+    /**
+     * nArrowの絞り込みによりハイライトされたキーワードの
+     * ハイライトを解除する
+     */
     function removeNarrowSelected(){
         var selectedNode = document.getElementsByClassName('narrow-selected');
-        for(var i = 0; i < selectedNode.length; i++) {
+        for(var i=0, len=selectedNode.length; i < len; i++) {
             selectedNode[i].classList.remove('narrow-selected');
         }
     }
 
+    /**
+     * 絞り込みウィンドウの表示
+     */
     function show(){
         if(isVisible) return;
+        if(!isInitialized) {
+            init();
+        }
         isVisible = true;
         setWindowSize();
+        search();
+        narrowWindow.classList.remove('narrow-hide');
+    }
 
+    /**
+     * 初期化する
+     */
+    function init(){
+        if (!isInitialized) {
+            linksArray = document.getElementsByTagName('a');
+            search();
+            setWindowSize();
+            isInitialized = true;
+        } else {
+            return;
+        }
+        var linksFragment = document.createDocumentFragment();
         for(var i = 0; i < linksArray.length; i++) {
             (function(i){
                 if(linksArray[i].href.startsWith('http://') ||
                    linksArray[i].href.startsWith('https://')){
                     var narrowItem = document.createElement('li');
                     narrowItem.classList.add('narrow-item');
+
                     var a = document.createElement('a');
                     a.href = linksArray[i].href;
                     a.addEventListener('focus', function(){
@@ -52,56 +89,68 @@ var nArrow = function(linksArray){
                                    linksArray[i].offsetTop - window.innerHeight/4);
                         })(i);
                     });
+
                     if(!linksArray[i].innerText.withoutWhiteSpace().isEmpty()){
                         var name = document.createElement('span');
                         name.classList.add('narrow-item-name');
                         name.append(linksArray[i].innerText);
                         a.append(name);
                     }
+
                     var url = document.createElement('span');
                     url.classList.add('narrow-item-url');
                     url.append(linksArray[i].href);
+
                     a.append(url);
                     narrowItem.append(a);
-                    narrowList.append(narrowItem);
+                    linksFragment.appendChild(narrowItem);
                 }
             })(i);
         }
+        narrowList.append(linksFragment);
+
         narrowWindow.append(narrowList);
         document.body.append(narrowWindow);
+        hide();
     }
 
+    /**
+     * 絞り込みウィンドウを隠す
+     */
     function hide(){
         if(!isVisible) return;
         removeNarrowSelected();
-        document.body.remove(narrowWindow);
         searchText.value = '';
-        narrowList.innerHTML = '';
         isVisible = false;
-    };
-
+        narrowWindow.classList.add('narrow-hide');
+    }
+    
+    /**
+     * 絞り込む
+     */
     function search(){
-        searchText.addEventListener('keyup', function(e){
-            var narrowLinks = document.querySelectorAll('.narrow-item > a');
-            var searchWord = searchText.value.toLowerCase().
-                replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
-                split(' ').join('.*');
-            var searchWord2 = searchText.value.toLowerCase().
-                replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
-                split(' ').reverse().join('.*');
-            for(var i = 0; i < narrowLinks.length; i++) {
-                (function(i){
-                    narrowLinks[i].parentNode.classList.remove('nohit');
-                    var linkText = narrowLinks[i].innerText.
-                            toLowerCase().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,' ');
-                    if (!linkText.match(searchWord) && !linkText.match(searchWord2)){
-                        narrowLinks[i].parentNode.classList.add('nohit');
-                    }
-                })(i);
-            }
-        });
+        var narrowLinks = document.querySelectorAll('.narrow-item > a');
+        var searchWord = searchText.value.toLowerCase().
+            replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
+            split(' ').join('.*');
+        var searchWord2 = searchText.value.toLowerCase().
+            replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ' ').
+            split(' ').reverse().join('.*');
+        for(var i = 0; i < narrowLinks.length; i++) {
+            (function(i){
+                narrowLinks[i].parentNode.classList.remove('nohit');
+                var linkText = narrowLinks[i].innerText.
+                        toLowerCase().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,' ');
+                if (!linkText.match(searchWord) && !linkText.match(searchWord2)){
+                    narrowLinks[i].parentNode.classList.add('nohit');
+                }
+            })(i);
+        }
     }
 
+    /**
+     * 絞り込まれたキーワード候補を選択する
+     */
     var select = function(){
         removeNarrowSelected();
         var focusNode = document.activeElement || null;
@@ -109,6 +158,7 @@ var nArrow = function(linksArray){
 
         function keymove(startIndex, move){
             if(!isVisible) return;
+            if(!narrowLinks[startIndex]) return;
             var target = narrowLinks[startIndex].firstChild;
             (focusNode.parentNode.tagName !== 'LI' ? target : (function(){
                 var node;
@@ -158,20 +208,6 @@ var nArrow = function(linksArray){
             if(document.getElementById('search-text')){
                 document.getElementById('search-text').focus();
             }
-        },
-        movePage : function(){
-            return {
-                parent : function(){
-                    var url = location.href;
-                    if(url.endsWith('/')){
-                        url = url.slice(0, -1);
-                    }
-                    location.href = url.substring(0, url.lastIndexOf('/'));
-                },
-                origin : function(){
-                    location.href = location.origin;
-                }
-            };
         }
     };
 };

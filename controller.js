@@ -78,5 +78,5 @@
                 }
             }
         }, false);
-    }(new nArrow(document.getElementsByTagName('a')));
+    })(new nArrow());
 })();
